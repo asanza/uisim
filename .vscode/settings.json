@@ -5,5 +5,8 @@
         "**/*.o": true,
         "**/*.uisim_test": true,
         "**/uisim_test": true
-    }
+    },
+    "editor.rulers": [
+        80
+    ]
 }
