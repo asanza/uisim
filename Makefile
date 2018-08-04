@@ -1,16 +1,10 @@
-ifeq ("$(V)","1")
-Q :=
-vecho := @true
-else
-Q := @
-vecho := @echo
-endif
+include common.mk
 
 TARGET=uisim_test
 
 SRCS = main.c
 INC += -I./lib/include
-LIBS = -Llib -luisim -lSDL2
+LIBS = -L$(SDL2_PATH)lib -luisim -lSDL2
 
 CFLAGS += $(INC) -D_REENTRANT  -O0  -gdwarf-2 -g3  -MMD -MP
 
@@ -47,6 +41,6 @@ clean:
 	rm -vf $(TARGET)
 	rm -vf $(OBJS)
 	rm -vf $(DEPS)
-	rm src
+	make --directory=lib clean
 
 -include $(DEPS)

@@ -1,17 +1,11 @@
-ifeq ("$(V)","1")
-Q :=
-vecho := @true
-else
-Q := @
-vecho := @echo
-endif
+include ../common.mk
 
 TARGET=libuisim
 
 SRCS = src/uisim.c
-INC += -I/usr/include/SDL2 -Iinclude
+INC += $(SDL2_PATH) include
 
-CFLAGS += $(INC) -D_REENTRANT  -O0  -gdwarf-2 -g3  -MMD -MP
+CFLAGS += $(addprefix -I,$(INC)) -D_REENTRANT  -O0  -gdwarf-2 -g3  -MMD -MP
 
 OBJS = $(patsubst %c,%o,$(SRCS))
 DEPS = $(patsubst %.o,%.d,$(OBJS))
