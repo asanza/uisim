@@ -1,0 +1,9 @@
+{
+    "files.exclude": {
+        "**/*.a": true,
+        "**/*.d": true,
+        "**/*.o": true,
+        "**/*.uisim_test": true,
+        "**/uisim_test": true
+    }
+}
