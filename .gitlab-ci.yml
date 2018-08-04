@@ -1,0 +1,15 @@
+# Run before each script
+before_script:
+  - export PATH=/usr/local/bin:/usr/bin:/bin
+  - git submodule update --init
+
+# Parallel jobs, each line is a parallel build
+build:
+  script:
+    - make -j 8
+  artifacts:
+    name: "$CI_JOB_NAME"
+    paths:
+      - uisim_test
+# Parallel deploy jobs
+# on_success:
