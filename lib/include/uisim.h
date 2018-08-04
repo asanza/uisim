@@ -14,7 +14,8 @@ extern "C" {
 enum uisim_event {
     UISIM_WINDOW_CLOSED,
     UISIM_KEY_PRESS,
-    UISIM_KEY_RELEASE
+    UISIM_KEY_RELEASE,
+    UISIM_NONE
 };
 
 int uisim_create(uint16_t xres, uint16_t yres, uint8_t scale);

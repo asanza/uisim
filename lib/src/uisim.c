@@ -14,7 +14,7 @@ struct window_ctx
 static struct window_ctx display_ctx, keyboard_ctx;
 
 static uint32_t background;
-static const int keysize = 50;
+static const int keysize = 100;
 
 #define DESTROY_CONTEXT( ctx ) do {         \
         SDL_DestroyWindow( ctx.window );  \
@@ -117,8 +117,13 @@ int uisim_create_keyboard( uint16_t keycount )
         return -1;
     }
 
-    keyboard_ctx.renderer = SDL_CreateRenderer(keyboard_ctx.window, -1, 0);
-    
+    keyboard_ctx.renderer = SDL_CreateRenderer(keyboard_ctx.window, -1, 
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+
+    keyboard_ctx.texture = SDL_CreateTexture(keyboard_ctx.renderer, 
+        SDL_PIXELFORMAT_RGBA8888, 
+        SDL_TEXTUREACCESS_TARGET, keysize, keycount * keysize);
+
     SDL_RenderClear(keyboard_ctx.renderer);
     SDL_RenderPresent(keyboard_ctx.renderer);
 
@@ -127,4 +132,18 @@ int uisim_create_keyboard( uint16_t keycount )
 
 void uisim_add_key(const char* keyname) {
 
+}
+
+enum uisim_event uisim_poll( void )
+{
+    SDL_Event evt;
+    if( SDL_PollEvent(&evt) == 1 )
+    {
+        if(evt.type == SDL_WINDOWEVENT && 
+            evt.window.event == SDL_WINDOWEVENT_CLOSE) 
+        {
+            return UISIM_WINDOW_CLOSED;
+        }
+    }
+    return UISIM_NONE;
 }
