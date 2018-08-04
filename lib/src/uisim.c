@@ -1,37 +1,75 @@
 #include <uisim.h>
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <assert.h>
 
-void test_fn( void )
+static SDL_Window *window;
+static SDL_Renderer *renderer;
+static SDL_Texture *texture;
+static uint32_t background;
+
+int uisim_create(uint16_t xres, uint16_t yres, uint8_t scale)
 {
-    SDL_Window *window;                    // Declare a pointer
+    assert(xres > 0);
+    assert(yres > 0);
+    assert(scale > 0);
 
-    SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
-
-    // Create an application window with the following settings:
-    window = SDL_CreateWindow(
-        "An SDL2 window",                  // window title
-        SDL_WINDOWPOS_UNDEFINED,           // initial x position
-        SDL_WINDOWPOS_UNDEFINED,           // initial y position
-        640,                               // width, in pixels
-        480,                               // height, in pixels
-        SDL_WINDOW_OPENGL                  // flags - see below
-    );
-
-    // Check that the window was successfully created
-    if (window == NULL) {
-        // In the case that the window could not be made...
-        printf("Could not create window: %s\n", SDL_GetError());
-        return 1;
+    if( SDL_Init(SDL_INIT_VIDEO) < 0 )
+    {
+        return -1;
     }
 
-    // The window is open: could enter program loop here (see SDL_PollEvent())
+    window = SDL_CreateWindow(
+        "LCD Display",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        xres * scale,
+        yres * scale,
+        SDL_WINDOW_OPENGL
+    );
 
-    SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example
+    if( window == NULL ) {
+        return -1;
+    }
 
-    // Close and destroy the window
-    SDL_DestroyWindow(window);
+    renderer = SDL_CreateRenderer(window, -1, 0);
+    SDL_RenderSetScale(renderer, scale, scale);
+    
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
 
-    // Clean up
+    return 0;
+}
+
+static void fill_screen(uint32_t color)
+{
+    SDL_SetRenderDrawColor(renderer, color >> 24, color >> 16, color >> 8, color );
+    SDL_RenderClear(renderer);
+}
+
+void uisim_fill(uint32_t color)
+{
+    fill_screen(color);
+    SDL_RenderPresent(renderer);
+    background = color;
+}
+
+void uisim_destroy( void )
+{
+    SDL_DestroyWindow( window );
     SDL_Quit();
+}
+
+void uisim_drawpoint(uint16_t xpos, uint16_t ypos, uint32_t color)
+{
+    fill_screen(background);
+    SDL_SetRenderDrawColor(renderer, color >> 24, color >> 16, color >> 8, SDL_ALPHA_OPAQUE );
+    SDL_RenderDrawPoint(renderer, xpos, ypos);
+    SDL_RenderPresent(renderer);
+}
+
+void uisim_clear( void ) 
+{
+    fill_screen(background);
+    SDL_RenderPresent(renderer);
 }
