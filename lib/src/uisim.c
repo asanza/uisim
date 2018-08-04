@@ -3,11 +3,23 @@
 #include <SDL2/SDL.h>
 #include <assert.h>
 
-static SDL_Window *window, *keyboard;
-static SDL_Renderer *renderer;
-static SDL_Texture *texture;
+struct window_ctx
+{
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    SDL_Texture *texture;
+    uint32_t background;
+};
+
+static struct window_ctx display_ctx, keyboard_ctx;
+
 static uint32_t background;
 static const int keysize = 50;
+
+#define DESTROY_CONTEXT( ctx ) do {         \
+        SDL_DestroyWindow( ctx.window );  \
+        SDL_DestroyTexture( ctx.texture );  \
+    } while(0)
 
 int uisim_create(uint16_t xres, uint16_t yres, uint8_t scale)
 {
@@ -20,7 +32,7 @@ int uisim_create(uint16_t xres, uint16_t yres, uint8_t scale)
         return -1;
     }
 
-    window = SDL_CreateWindow(
+    display_ctx.window = SDL_CreateWindow(
         "LCD Display",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_CENTERED,
@@ -29,52 +41,55 @@ int uisim_create(uint16_t xres, uint16_t yres, uint8_t scale)
         SDL_WINDOW_OPENGL
     );
 
-    if( window == NULL ) {
+    if( display_ctx.window == NULL ) {
         return -1;
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED 
-        | SDL_RENDERER_TARGETTEXTURE);
+    display_ctx.renderer = SDL_CreateRenderer(display_ctx.window, -1, 
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
+    display_ctx.texture = SDL_CreateTexture(display_ctx.renderer, 
+        SDL_PIXELFORMAT_RGBA8888, 
         SDL_TEXTUREACCESS_TARGET, xres, yres);
 
-    SDL_RenderSetScale(renderer, scale, scale);
+    SDL_RenderSetScale(display_ctx.renderer, scale, scale);
     
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
+    SDL_RenderClear(display_ctx.renderer);
+    SDL_RenderPresent(display_ctx.renderer);
 
     return 0;
 }
 
 void uisim_fill(uint32_t color)
 {
-    SDL_SetRenderTarget(renderer, texture);
-    SDL_SetRenderDrawColor(renderer, color >> 24, color >> 16, color >> 8, SDL_ALPHA_OPAQUE );
-    SDL_RenderClear(renderer);
+    SDL_SetRenderTarget(display_ctx.renderer, display_ctx.texture);
+    SDL_SetRenderDrawColor(display_ctx.renderer, color >> 24, 
+            color >> 16, color >> 8, SDL_ALPHA_OPAQUE );
+    SDL_RenderClear(display_ctx.renderer);
 
-    SDL_SetRenderTarget(renderer, NULL);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
+    SDL_SetRenderTarget(display_ctx.renderer, NULL);
+    SDL_RenderCopy(display_ctx.renderer, display_ctx.texture, NULL, NULL);
+    SDL_RenderPresent(display_ctx.renderer);
 
     background = color;
 }
 
 void uisim_destroy( void )
 {
-    SDL_DestroyWindow( window );
+    DESTROY_CONTEXT(display_ctx);
+    DESTROY_CONTEXT(keyboard_ctx);
     SDL_Quit();
 }
 
 void uisim_drawpoint(uint16_t xpos, uint16_t ypos, uint32_t color)
 {
-    SDL_SetRenderTarget(renderer, texture);
-    SDL_SetRenderDrawColor(renderer, color >> 24, color >> 16, color >> 8, SDL_ALPHA_OPAQUE );
-    SDL_RenderDrawPoint(renderer, xpos, ypos);
+    SDL_SetRenderTarget(display_ctx.renderer, display_ctx.texture);
+    SDL_SetRenderDrawColor(display_ctx.renderer, color >> 24, color >> 16, color >> 8, SDL_ALPHA_OPAQUE );
+    SDL_RenderDrawPoint(display_ctx.renderer, xpos, ypos);
 
-    SDL_SetRenderTarget(renderer, NULL);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
+    SDL_SetRenderTarget(display_ctx.renderer, NULL);
+    SDL_RenderCopy(display_ctx.renderer, display_ctx.texture, NULL, NULL);
+    SDL_RenderPresent(display_ctx.renderer);
 }
 
 void uisim_clear( void ) 
@@ -89,7 +104,7 @@ int uisim_create_keyboard( uint16_t keycount )
         return -1;
     }
 
-    keyboard = SDL_CreateWindow(
+    keyboard_ctx.window = SDL_CreateWindow(
         "KEYBOARD",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_CENTERED,
@@ -98,14 +113,14 @@ int uisim_create_keyboard( uint16_t keycount )
         SDL_WINDOW_OPENGL
     );
 
-    if( window == NULL ) {
+    if( keyboard_ctx.window == NULL ) {
         return -1;
     }
 
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    keyboard_ctx.renderer = SDL_CreateRenderer(keyboard_ctx.window, -1, 0);
     
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
+    SDL_RenderClear(keyboard_ctx.renderer);
+    SDL_RenderPresent(keyboard_ctx.renderer);
 
     return 0;
 }
