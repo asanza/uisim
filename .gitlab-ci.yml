@@ -6,7 +6,7 @@ before_script:
 # Parallel jobs, each line is a parallel build
 build:
   script:
-    - make -j 8
+    - make BUILD=WINDOWS -j 8
   artifacts:
     name: "$CI_JOB_NAME"
     paths:
