@@ -4,7 +4,11 @@ TARGET=uisim_test
 
 SRCS = main.c
 INC += -I./lib/include
-LIBS = -L$(SDL2_PATH)lib -luisim -lSDL2
+LIBS = -luisim -lSDL2
+
+LIBRARY_PATHS = $(SDL2_LIBRARY_PATH) lib 
+
+LDFLAGS += $(addprefix -L,$(LIBRARY_PATHS))
 
 CFLAGS += $(INC) -D_REENTRANT  -O0  -gdwarf-2 -g3  -MMD -MP
 

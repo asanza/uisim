@@ -3,7 +3,7 @@ include ../common.mk
 TARGET=libuisim
 
 SRCS = src/uisim.c
-INC += $(SDL2_PATH) include
+INC += $(SDL2_INCLUDE_PATH) include
 
 CFLAGS += $(addprefix -I,$(INC)) -D_REENTRANT  -O0  -gdwarf-2 -g3  -MMD -MP
 
