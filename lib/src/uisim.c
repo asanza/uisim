@@ -100,8 +100,9 @@ void uisim_drawpoints(uint16_t* x, uint16_t* y, uint32_t* color, uint32_t len)
 
     for( int i = 0; i < len; i++) {
         SDL_SetRenderDrawColor(display_ctx.renderer, 
-            *color >> 24, *color >> 16, *color++ >> 8, SDL_ALPHA_OPAQUE );
-        SDL_RenderDrawPoint(display_ctx.renderer, *x++, *y++);
+            *color >> 24, *color >> 16, *color >> 8, SDL_ALPHA_OPAQUE );
+        SDL_RenderDrawPoint(display_ctx.renderer, *x, *y);
+        color++; x++; y++;
     }
 
     SDL_SetRenderTarget(display_ctx.renderer, NULL);
