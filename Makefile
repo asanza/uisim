@@ -2,8 +2,8 @@ include common.mk
 
 TARGET=uisim_test
 
-SRCS = main.c
-INC += -I./lib/include
+SRCS = examples/main.c examples/ugui/src/ugui.c
+INC += -I./lib/include -I./examples/ugui/include
 LIBS = -luisim -lSDL2
 
 LIBRARY_PATHS = $(SDL2_LIBRARY_PATH) lib 
@@ -11,6 +11,7 @@ LIBRARY_PATHS = $(SDL2_LIBRARY_PATH) lib
 LDFLAGS += $(addprefix -L,$(LIBRARY_PATHS))
 
 CFLAGS += $(INC) -D_REENTRANT  -O0  -gdwarf-2 -g3  -MMD -MP
+CFLAGS += -DUSE_FONT_8X8
 
 OBJS = $(patsubst %c,%o,$(SRCS))
 DEPS = $(patsubst %.o,%.d,$(OBJS))

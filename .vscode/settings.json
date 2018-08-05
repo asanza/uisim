@@ -8,5 +8,8 @@
     },
     "editor.rulers": [
         80
-    ]
+    ],
+    "files.associations": {
+        "ugui.h": "c"
+    }
 }
