@@ -335,20 +335,67 @@ enum uisim_key {
     UISIM_KEY_AUDIOFASTFORWARD = 286
 };
 
+/**
+ * @brief create a display window. You can use this function only once.
+ * 
+ * @param xres horizontal resolution
+ * @param yres vertical resolution
+ * @param scale pixel scale (how many pixels in your monitor correspond to one
+ *              pixel in the display to be created)
+ * @return int 0 if no error.
+ */
 int uisim_create(uint16_t xres, uint16_t yres, uint8_t scale);
 
+/**
+ * @brief Destroy the display.
+ */
 void uisim_destroy();
 
+/**
+ * @brief Draw a point in the display.
+ * 
+ * @param xpos x-coordinate
+ * @param ypos y-coordinate
+ * @param color which color. Use the macro USIM_RGB(R,G,B) to
+ *              convert RGB color space to uint32_t color.
+ */
 void uisim_drawpoint(uint16_t xpos, uint16_t ypos, uint32_t color);
 
+/**
+ * @brief Draw a collection of points in the display.
+ * 
+ * @param x array of x coordinates
+ * @param y array of y coordinates
+ * @param color array of pixel colors
+ * @param len lenght of the array. x, y, and color array should have the 
+ * same length.
+ */
 void uisim_drawpoints(uint16_t* x, uint16_t* y, uint32_t* color, uint32_t len);
 
+/**
+ * @brief clear the display. (set the background)
+ */
 void uisim_clear( void );
 
+/**
+ * @brief Fill the display with a given color
+ * 
+ * @param color 
+ */
 void uisim_fill( uint32_t color );
 
+/**
+ * @brief Poll events. Should be called periodically.
+ * 
+ * @return enum uisim_poll 
+ */
 enum uisim_event uisim_poll( void );
 
+/**
+ * @brief get the last key pressed.
+ * 
+ * @return enum uisim_getkey 
+ */
 enum uisim_key  uisim_getkey( void );
 
 #ifdef __cplusplus
