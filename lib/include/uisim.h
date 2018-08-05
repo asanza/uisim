@@ -341,6 +341,8 @@ void uisim_destroy();
 
 void uisim_drawpoint(uint16_t xpos, uint16_t ypos, uint32_t color);
 
+void uisim_drawpoints(uint16_t* x, uint16_t* y, uint32_t len, uint32_t color);
+
 void uisim_clear( void );
 
 void uisim_fill( uint32_t color );
