@@ -26,6 +26,8 @@ struct window_ctx
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *texture;
+    SDL_Texture *overlay;
+    uint32_t scale;
     uint32_t background;
 };
 
@@ -65,6 +67,8 @@ int uisim_create(uint16_t xres, uint16_t yres, uint8_t scale)
         return -1;
     }
 
+    display_ctx.scale = scale;
+
     display_ctx.renderer = SDL_CreateRenderer(display_ctx.window, -1, 
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 
@@ -72,7 +76,9 @@ int uisim_create(uint16_t xres, uint16_t yres, uint8_t scale)
         SDL_PIXELFORMAT_RGBA8888, 
         SDL_TEXTUREACCESS_TARGET, xres, yres);
 
-    SDL_RenderSetScale(display_ctx.renderer, scale, scale);
+    display_ctx.overlay = SDL_CreateTexture(display_ctx.renderer, 
+        SDL_PIXELFORMAT_RGBA8888, 
+        SDL_TEXTUREACCESS_TARGET, xres*scale, yres*scale);
     
     SDL_RenderClear(display_ctx.renderer);
     SDL_RenderPresent(display_ctx.renderer);
@@ -82,13 +88,31 @@ int uisim_create(uint16_t xres, uint16_t yres, uint8_t scale)
 
 void uisim_fill(uint32_t color)
 {
+    int w, h;
+
     SDL_SetRenderTarget(display_ctx.renderer, display_ctx.texture);
     SDL_SetRenderDrawColor(display_ctx.renderer, color >> 24, 
             color >> 16, color >> 8, SDL_ALPHA_OPAQUE );
     SDL_RenderClear(display_ctx.renderer);
 
+    /* create the lcdish texture */
+    SDL_SetTextureBlendMode(display_ctx.overlay, SDL_BLENDMODE_BLEND);    
+    SDL_SetRenderTarget(display_ctx.renderer, display_ctx.overlay);
+    SDL_SetRenderDrawColor(display_ctx.renderer, 50, 50, 50, 100 );
+    SDL_RenderClear(display_ctx.renderer);
+    SDL_SetRenderDrawColor(display_ctx.renderer, 0x6D, 0x6D, 0x6D, 100 );
+
+    SDL_GetWindowSize(display_ctx.window, &w, &h);
+
+    for( int i = 0; i < w; i+=  display_ctx.scale )
+    {
+        SDL_RenderDrawLine(display_ctx.renderer, i, 0, i, h);
+        SDL_RenderDrawLine(display_ctx.renderer, 0, i, w, i);
+    }
+
     SDL_SetRenderTarget(display_ctx.renderer, NULL);
     SDL_RenderCopy(display_ctx.renderer, display_ctx.texture, NULL, NULL);
+    SDL_RenderCopy(display_ctx.renderer, display_ctx.overlay, NULL, NULL);
     SDL_RenderPresent(display_ctx.renderer);
 
     background = color;
@@ -109,6 +133,7 @@ void uisim_drawpoint(uint16_t xpos, uint16_t ypos, uint32_t color)
 
     SDL_SetRenderTarget(display_ctx.renderer, NULL);
     SDL_RenderCopy(display_ctx.renderer, display_ctx.texture, NULL, NULL);
+    SDL_RenderCopy(display_ctx.renderer, display_ctx.overlay, NULL, NULL);
     SDL_RenderPresent(display_ctx.renderer);
 }
 
@@ -125,6 +150,7 @@ void uisim_drawpoints(uint16_t* x, uint16_t* y, uint32_t* color, uint32_t len)
 
     SDL_SetRenderTarget(display_ctx.renderer, NULL);
     SDL_RenderCopy(display_ctx.renderer, display_ctx.texture, NULL, NULL);
+    SDL_RenderCopy(display_ctx.renderer, display_ctx.overlay, NULL, NULL);
     SDL_RenderPresent(display_ctx.renderer);
 }
 
