@@ -18,7 +18,7 @@ The library is located in the lib directory. It has two files, uisim.h and
 uisim.c. It uses the [SDL2](https://www.libsdl.org/index.php) library to draw 
 the virtual lcd screen and to read the user input via keyboard.
 
-The header file (uisim.h) is selfs-explanatory.
+The header file (uisim.h) is self-explanatory.
 
 ## License
 
