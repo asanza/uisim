@@ -98,9 +98,10 @@ void uisim_fill(uint32_t color)
     /* create the lcdish texture */
     SDL_SetTextureBlendMode(display_ctx.overlay, SDL_BLENDMODE_BLEND);    
     SDL_SetRenderTarget(display_ctx.renderer, display_ctx.overlay);
-    SDL_SetRenderDrawColor(display_ctx.renderer, 50, 50, 50, 100 );
+    SDL_SetRenderDrawColor(display_ctx.renderer, 128, 128, 128, 50 );
     SDL_RenderClear(display_ctx.renderer);
-    SDL_SetRenderDrawColor(display_ctx.renderer, 0x6D, 0x6D, 0x6D, 100 );
+    SDL_SetRenderDrawColor(display_ctx.renderer, 
+        color >> 24, color >> 16, color >> 8, 200 );
 
     SDL_GetWindowSize(display_ctx.window, &w, &h);
 
